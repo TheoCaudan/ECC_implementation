@@ -8,25 +8,27 @@ Ce script propose une implémentation simplifiée de chiffrement utilisant des c
 Ce script permet de:
 - Générer une paire de clefs privée (k) et publique (Q = kP)
 - Chiffrer un message à l'aide d'une clef publique
-- Déchiffrer un message préalablement chiffrée avec la clef publique à l'aide d'une clef privée associée
+- Déchiffrer un message préalablement chiffrée avec la clef publique à l'aide d'une clef privée associée.
 
+### Notes: 
 La clef symétrique est dérivée d'un secret partagé (ECDH), puis utilisée avec AES-CBC et padding PKCS#7.
----
+
+
 ## Pré-requis
 Installer Python3 et la librairie cryptography
 
 ```bash
 pip install cryptography
 ```
----
+
 ## Comment l'utiliser ?
-Afficher l'aide:
+## Afficher l'aide:
 
 ```bash
 python -m monECC help
 ```
 
-Générer une paire de clefs:
+## Générer une paire de clefs:
 
 ```bash
 python -m monECC keygen
@@ -36,7 +38,7 @@ Cela génère deux fichiers : "monECC.priv" et "monECC.pub"
 
 ### Options disponibles
 
--f <filename>
+`-f <filename>`
 
 Permet de spécifier le nom de base des fichiers:
 
@@ -46,7 +48,7 @@ python -m monECC keygen -f alice
 
 -> génère "alice.priv" et "alice.pub"
 
--s <size>
+`-s <size>`
 
 Permet de choisir la plage d'aléa de la clef privée (défaut = 1000):
 
@@ -54,7 +56,8 @@ Permet de choisir la plage d'aléa de la clef privée (défaut = 1000):
 python -m monECC keygen -s 50000
 ```
 
-Notes: les options se combinent
+### Notes: 
+Les options se combinent
 
 Exemple:
 
@@ -62,7 +65,7 @@ Exemple:
 python -m monECC keygen -f bob -s 75000
 ```
 
-Chiffrer un message:
+## Chiffrer un message:
 
 ```bash
 python -m monECC crypt monECC.pub "Texte en clair"
@@ -76,7 +79,7 @@ Rx,Ry:base64(ciphertext)
 
 ### Options supplémentaires
 
--i <fichier>
+`-i <fichier>`
 
 Prend le contenu d'un fichier comme message à chiffrer:
 
@@ -84,7 +87,7 @@ Prend le contenu d'un fichier comme message à chiffrer:
 python -m monECC crypt monECC.pub -i secret.txt
 ```
 
--o <fichier>
+`-o <fichier>`
 
 Renvoie le cryptogramme dans un fichier:
 
@@ -98,12 +101,11 @@ Ces deux options se combinent également :
 python -m monECC crypt monECC.pub -i secret.txt -o out.enc
 ```
 
----
-
-Déchiffrer un message:
+## Déchiffrer un message:
 
 ```bash
 python -m monECC decrypt monECC.priv "Message chiffré"
 ```
 
-Note: La fonction decrypt bénéficie des mêmes options que la fonction crypt (-i et -o) et il est également possible de les combiner.
+### Note: 
+La fonction decrypt bénéficie des mêmes options que la fonction crypt (-i et -o) et il est également possible de les combiner.
