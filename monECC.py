@@ -138,6 +138,7 @@ def main():
         print("Options: ")
         print(" -f <filename> : base des noms de fichiers de clef")
         print(" -s <size>     : taille max aléa keygen (défaut=1000)")
+        print(" -i <input>    : fichier d'entrée")
         return
 
     cmd = sys.argv[1]
@@ -151,6 +152,9 @@ def main():
     if "-s" in sys.argv:
         size = int(sys.argv[sys.argv.index("-s") + 1])
 
+    if "-i" in sys.argv:
+        infile = sys.argv[sys.argv.index("-i") + 1]
+
     if cmd == "keygen":
         if filename is None:
             filename = "monECC"
@@ -158,12 +162,20 @@ def main():
 
     elif cmd == "crypt":
         pub = filename if filename else sys.argv[2]
-        text = sys.argv[3]
+        if infile:
+            with open(infile) as f:
+                text = f.read()
+        else:
+            text = sys.argv[3]
         encrypt(pub, text)
 
     elif cmd == "decrypt":
         priv = filename if filename else sys.argv[2]
-        cryptogram = sys.argv[3]
+        if infile:
+            with open(infile) as f:
+                cryptogram = f.read()
+        else:
+            cryptogram = sys.argv[3]
         decrypt(priv, cryptogram)
 
     else:
