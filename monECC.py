@@ -9,8 +9,8 @@ import sys
 P = (2, 9)
 a, b, p = 35, 3, 101
 
-def keygen(filename="monECC"):
-    k = int(rd.randrange(1, 1000))
+def keygen(filename="monECC", size=1000):
+    k = int(rd.randrange(1, size))
     Q = multiply_point(k, P)
 
     with open(f"{filename}.priv", "w") as f:
@@ -134,30 +134,37 @@ def decrypt(privfile, cryptogram):
 def main():
     if len(sys.argv) < 2 or sys.argv[1] == "help":
         print("Script monECC")
-        print("Usage: monECC <keygen|crypt|decrypt|help> [<clef>] [<texte>] [-f filename]")
+        print("Usage: monECC <keygen|crypt|decrypt|help> [options]")
+        print("Options: ")
+        print(" -f <filename> : base des noms de fichiers de clef")
+        print(" -s <size>     : taille max aléa keygen (défaut=1000)")
         return
-    
+
     cmd = sys.argv[1]
 
+    filename = None
+    size = 1000
+
+    if "-f" in sys.argv:
+        filename = sys.argv[sys.argv.index("-f") + 1]
+
+    if "-s" in sys.argv:
+        size = int(sys.argv[sys.argv.index("-s") + 1])
+
     if cmd == "keygen":
-        filename = "monECC"
-        if "-f" in sys.argv:
-            idx = sys.argv.index("-f")
-            if idx+1 < len(sys.argv):
-                filename = sys.argv[idx+1]
-        keygen(filename)
+        if filename is None:
+            filename = "monECC"
+        keygen(filename, size)
 
     elif cmd == "crypt":
-        if len(sys.argv) < 4:
-            print("crypt nécessite <clef> et <texte>")
-            return
-        encrypt(sys.argv[2], sys.argv[3])
+        pub = filename if filename else sys.argv[2]
+        text = sys.argv[3]
+        encrypt(pub, text)
 
     elif cmd == "decrypt":
-        if len(sys.argv) < 4:
-            print("decrypt nécessite <clef> et <texte_chiffré>")
-            return
-        decrypt(sys.argv[2], sys.argv[3])
+        priv = filename if filename else sys.argv[2]
+        cryptogram = sys.argv[3]
+        decrypt(priv, cryptogram)
 
     else:
         print("Commande inconnue")
