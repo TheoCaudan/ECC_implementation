@@ -56,6 +56,12 @@ python -m monECC keygen -s 50000
 
 Notes: les options se combinent
 
+Exemple:
+
+```bash
+python -m monECC keygen -f bob -s 75000
+```
+
 Chiffrer un message:
 
 ```bash
@@ -68,8 +74,36 @@ python -m monECC crypt monECC.pub "Texte en clair"
 Rx,Ry:base64(ciphertext)
 ```
 
+### Options supplémentaires
+
+-i <fichier>
+
+Prend le contenu d'un fichier comme message à chiffrer:
+
+```bash
+python -m monECC crypt monECC.pub -i secret.txt
+```
+
+-o <fichier>
+
+Renvoie le cryptogramme dans un fichier:
+
+```bash
+python -m monECC crypt monECC.pub "bonjour" -o out.enc
+```
+
+Ces deux options se combinent également :
+
+```bash
+python -m monECC crypt monECC.pub -i secret.txt -o out.enc
+```
+
+---
+
 Déchiffrer un message:
 
 ```bash
 python -m monECC decrypt monECC.priv "Message chiffré"
 ```
+
+Note: La fonction decrypt bénéficie des mêmes options que la fonction crypt (-i et -o) et il est également possible de les combiner.

@@ -90,7 +90,7 @@ def shared_secret(k, Q):
     secret_bytes = f"{S[0]},{S[1]}".encode()
     return hl.sha256(secret_bytes).digest()
 
-def encrypt(pubfile, plaintext):
+def encrypt(pubfile, plaintext, outfile=None):
     Qb = read_public_key(pubfile)
     k_eph = rd.randint(1, 1000)
     S = shared_secret(k_eph, Qb)
@@ -107,9 +107,14 @@ def encrypt(pubfile, plaintext):
 
     R = multiply_point(k_eph, P)
     cryptogram = f"{R[0]},{R[1]}:{b64.b64encode(ciphertext).decode()}"
-    print(cryptogram)
+    
+    if outfile:
+        with open(outfile, "w") as f:
+            f.write(cryptogram)
+    else:
+        print(cryptogram)
 
-def decrypt(privfile, cryptogram):
+def decrypt(privfile, cryptogram, outfile=None):
     k = read_private_key(privfile)
     try:
         R_str, c_b64 = cryptogram.split(":")
@@ -129,7 +134,12 @@ def decrypt(privfile, cryptogram):
 
     unpadder = padding.PKCS7(128).unpadder()
     plaintext = unpadder.update(padded_data) + unpadder.finalize()
-    print(plaintext.decode())
+
+    if outfile:
+        with open(outfile, "w") as f:
+            f.write(plaintext.decode())
+    else:
+        print(plaintext.decode())
 
 def main():
     if len(sys.argv) < 2 or sys.argv[1] == "help":
@@ -139,12 +149,15 @@ def main():
         print(" -f <filename> : base des noms de fichiers de clef")
         print(" -s <size>     : taille max aléa keygen (défaut=1000)")
         print(" -i <input>    : fichier d'entrée")
+        print(" -o <output>   : fichier de sortie")
         return
 
     cmd = sys.argv[1]
 
     filename = None
     size = 1000
+    infile = None
+    outfile = None
 
     if "-f" in sys.argv:
         filename = sys.argv[sys.argv.index("-f") + 1]
@@ -154,6 +167,9 @@ def main():
 
     if "-i" in sys.argv:
         infile = sys.argv[sys.argv.index("-i") + 1]
+
+    if "-o" in sys.argv:
+        outfile = sys.argv[sys.argv.index("-o") + 1]
 
     if cmd == "keygen":
         if filename is None:
@@ -167,7 +183,7 @@ def main():
                 text = f.read()
         else:
             text = sys.argv[3]
-        encrypt(pub, text)
+        encrypt(pub, text, outfile)
 
     elif cmd == "decrypt":
         priv = filename if filename else sys.argv[2]
@@ -176,7 +192,7 @@ def main():
                 cryptogram = f.read()
         else:
             cryptogram = sys.argv[3]
-        decrypt(priv, cryptogram)
+        decrypt(priv, cryptogram, outfile)
 
     else:
         print("Commande inconnue")
